@@ -1,6 +1,8 @@
-"use client";
+"use client"
 
 import React from 'react'
+import NavButton from './NavButton'
+import { usePathname } from 'next/navigation'
 
 const routes = [
     {
@@ -26,9 +28,19 @@ const routes = [
 ]
 
 export const Navigation = () => {
+
+    const pathname = usePathname()
+
     return (
         <nav className='hidden lg:flex items-center gap-x-2 overflow-x-auto'>
-            Navigation
+            {routes.map(({ href, label }) => (
+            <NavButton
+                key={href}
+                href={href}
+                label={label}
+                isActive={pathname === href}
+            />
+            ))}
         </nav>
     )
 }
