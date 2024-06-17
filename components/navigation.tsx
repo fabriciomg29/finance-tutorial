@@ -8,8 +8,8 @@ import {
     Sheet,
     SheetContent,
     SheetTrigger,
-} from './sheet'
-import { Button } from './button'
+} from './ui/sheet'
+import { Button } from './ui/button'
 import { Menu } from 'lucide-react'
 
 const routes = [
