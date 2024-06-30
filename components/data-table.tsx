@@ -11,6 +11,7 @@ import {
     getSortedRowModel,
     useReactTable,
     getPaginationRowModel,
+    Row,
 } from "@tanstack/react-table";
 import {
     Table,
@@ -28,12 +29,16 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     filterKey: string;
+    onDelete: (row: Row<TData>[]) => void;
+    disabled?: boolean;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
     filterKey,
+    onDelete,
+    disabled,
 }: DataTableProps<TData, TValue>) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
@@ -76,9 +81,18 @@ export function DataTable<TData, TValue>({
                     className="max-w-sm"
                     autoFocus
                 />
-                <Button size="sm" variant="outline" className="ml-auto font-normal text-xs" disabled={!table.getFilteredSelectedRowModel().rows.length}>
+                <Button
+                    size="sm"
+                    variant="outline"
+                    className="ml-auto font-normal text-xs"
+                    disabled={disabled}
+                    onClick={() => {
+                        onDelete(table.getFilteredSelectedRowModel().rows);
+                        table.resetRowSelection();
+                    }}
+                >
                     <Trash className="size-4 mr-2" />
-                    Delete ({ table.getFilteredSelectedRowModel().rows.length })
+                    Delete ({table.getFilteredSelectedRowModel().rows.length})
                 </Button>
             </div>
             <div className="rounded-md border">
