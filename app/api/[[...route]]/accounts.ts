@@ -54,13 +54,10 @@ const app = new Hono()
                 })
                 .from(accounts)
                 .where(
-                    and(
-                        eq(accounts.userId, auth.userId),
-                        eq(accounts.id, id)
-                    )
+                    and(eq(accounts.userId, auth.userId), eq(accounts.id, id))
                 );
 
-            if(!data) {
+            if (!data) {
                 return c.json({ error: "Not found" }, 404);
             }
 
@@ -124,6 +121,50 @@ const app = new Hono()
                 .returning({
                     id: accounts.id,
                 });
+
+            return c.json({ data });
+        }
+    )
+    .patch(
+        "/:id",
+        clerkMiddleware(),
+        zValidator(
+            "param",
+            z.object({
+                id: z.string(),
+            })
+        ),
+        zValidator(
+            "json",
+            insertAccountSchema.pick({
+                name: true,
+            })
+        ),
+        async (c) => {
+            const auth = getAuth(c);
+            const { id } = c.req.valid("param");
+            const values = c.req.valid("json");
+
+            if (!id) {
+                return c.json({ error: "Missing id" }, 400);
+            }
+
+            if (!auth?.userId) {
+                return c.json({ error: "Unauthorized" }, 401);
+            }
+
+            const [data] = await db
+                .update(accounts)
+                .set(values)
+                .where(and(
+                    eq(accounts.userId, auth.userId),
+                    eq(accounts.id, id)
+                ))
+                .returning();
+
+            if(!data) {
+                return c.json({ error: "Not found" }, 404);
+            }
 
             return c.json({ data });
         }
