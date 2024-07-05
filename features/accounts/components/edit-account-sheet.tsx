@@ -11,6 +11,7 @@ import { AccountForm } from "@/features/accounts/components/account-form";
 import { useOpenAccount } from "@/features/accounts/hooks/use-open-account";
 import { useGetAccount } from "@/features/accounts/api/use-get-account";
 import { useEditAccount } from "@/features/accounts/api/use-edit-account";
+import { useDeleteAccount } from "../api/use-delete-account";
 
 const formSchema = insertAccountSchema.pick({ name: true });
 
@@ -21,12 +22,24 @@ export function EditAccountSheet() {
 
     const accountQuery = useGetAccount(id);
     const editMutation = useEditAccount(id);
+    const deleteMutation = useDeleteAccount(id);
 
-    const isLoading = accountQuery.isLoading;
-    const isPending = editMutation.isPending;
+    const isEditPending = editMutation.isPending;
+    const isDeletePending = deleteMutation.isPending;
+
+    const isLoading =
+        accountQuery.isLoading || isEditPending || isDeletePending;
 
     const onSubmit = (values: FormValues) => {
         editMutation.mutate(values, {
+            onSuccess: () => {
+                onClose();
+            },
+        });
+    };
+
+    const onDelete = (id?: string) => {
+        deleteMutation.mutate({ param: { id }}, {
             onSuccess: () => {
                 onClose();
             },
@@ -47,7 +60,7 @@ export function EditAccountSheet() {
                 <SheetHeader>
                     <SheetTitle>Edit Account</SheetTitle>
                 </SheetHeader>
-                {(isLoading || isPending) ? (
+                {isLoading ? (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <Loader2 className="size-4 text-muted-foreground animate-spin" />
                     </div>
@@ -55,7 +68,8 @@ export function EditAccountSheet() {
                     <AccountForm
                         id={id}
                         onSubmit={onSubmit}
-                        disabled={isPending}
+                        onDelete={onDelete}
+                        disabled={isLoading}
                         defaultValue={defaultValues}
                     />
                 )}
