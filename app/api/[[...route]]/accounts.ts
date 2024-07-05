@@ -196,7 +196,9 @@ const app = new Hono()
                     eq(accounts.userId, auth.userId),
                     eq(accounts.id, id)
                 ))
-                .returning();
+                .returning({
+                    id: accounts.id,
+                });
 
             if(!data) {
                 return c.json({ error: "Not found" }, 404);

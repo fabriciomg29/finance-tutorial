@@ -6,14 +6,12 @@ import { client } from "@/lib/hono";
 type ResponseType = InferResponseType<
     (typeof client.api.accounts)[":id"]["$delete"]
 >;
-type RequestType = InferRequestType<
-    (typeof client.api.accounts)[":id"]["$delete"]>;
 
 export const useDeleteAccount = (id?: string) => {
     const queryClient = useQueryClient();
 
-    const mutation = useMutation<ResponseType, Error, RequestType>({
-        mutationFn: async (json) => {
+    const mutation = useMutation<ResponseType, Error>({
+        mutationFn: async () => {
             const response = await client.api.accounts[":id"]["$delete"]({
                 param: {
                     id,
@@ -29,7 +27,7 @@ export const useDeleteAccount = (id?: string) => {
         },
         onError: (error) => {
             console.error(error);
-            toast.error("Failed to edit account");
+            toast.error("Failed to delete account");
         },
     });
 
