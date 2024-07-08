@@ -15,7 +15,7 @@ const CategoriesPage = () => {
     const newCategory = useNewCategory();
     const deleteCategory = useBulkDeleteCategories();
     const categoriesQuery = useGetCategories();
-    const accounts = categoriesQuery.data || [];
+    const categories = categoriesQuery.data || [];
 
     const isDisabled =
         categoriesQuery.isLoading ||
@@ -53,8 +53,8 @@ const CategoriesPage = () => {
                 <CardContent>
                     <DataTable
                         columns={columns}
-                        data={accounts}
-                        filterKey="email"
+                        data={categories}
+                        filterKey="name"
                         onDelete={(row) => {
                             const ids = row.map((r) => r.original.id)
                             deleteCategory.mutate({ ids });
